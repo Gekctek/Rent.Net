@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Rent.Net.Common;
+using System.Web.Http;
 
 namespace Rent.Net.Controllers
 {
@@ -17,7 +18,7 @@ namespace Rent.Net.Controllers
             return this.View();
         }
 
-        [HttpGet]
+        [System.Web.Mvc.HttpGet]
         public ActionResult Send()
         {
             Request request = new Request { PayeeId = this.UserId };
@@ -30,7 +31,7 @@ namespace Rent.Net.Controllers
             return this.View(request);
         }
 
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult Send(Request request)
         {
             if (this.ModelState.IsValid)
@@ -43,6 +44,25 @@ namespace Rent.Net.Controllers
             {
                 return this.SendView(request);
             }
+        }
+    }
+}
+
+
+namespace Rent.Net.ApiControllers
+{
+    public class RequestController : BaseApiController
+    {
+        public IHttpActionResult Delete(int id)
+        {
+            Request request = this.Database.Requests.FirstOrDefault(r => r.RequestId == id);
+            if(request == null)
+            {
+                return this.BadRequest("Request does not exist with the id of " + id);
+            }
+            this.Database.Entry(request).State = System.Data.Entity.EntityState.Deleted;
+            this.Database.SaveChanges();
+            return this.Ok();
         }
     }
 }

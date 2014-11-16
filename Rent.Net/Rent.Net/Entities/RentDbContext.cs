@@ -18,13 +18,13 @@ namespace Rent.Net.Entities
 
             modelBuilder.Entity<Request>()
                 .HasRequired(r => r.Payee)
-                .WithMany(u => u.RequestsTo)
+                .WithMany(u => u.RequestsFrom)
                 .HasForeignKey(r => r.PayeeId)
                 .WillCascadeOnDelete(false);
             
            modelBuilder.Entity<Request>()
                 .HasRequired(r => r.Payer)
-                .WithMany(r => r.RequestsFrom)
+                .WithMany(r => r.RequestsTo)
                 .HasForeignKey(r => r.PayerId)
                 .WillCascadeOnDelete(false);
 

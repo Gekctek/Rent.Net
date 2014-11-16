@@ -53,7 +53,7 @@
         function approvePayment(e) {
             var paymentId = $(e.delegateTarget).data("paymentId");
             $.ajax({
-                url: "@this.Url.HttpRouteUrl("DefaultApi", new { Controller = "Payment" })/" + paymentId,
+                url: "@this.Url.HttpRouteUrl("ApiWithAction", new { Controller = "PaymentAction", Action = "Approve" })/" + paymentId,
                 method: "POST",
                 success: function (response) {
                     alert(response);

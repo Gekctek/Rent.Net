@@ -16,7 +16,7 @@
                 <br />
                 Notes: @request.Notes
                 <br />
-                @Html.ActionLink("Pay", "Send", "Payment", new { requestId = request.RequestId }, new { @class = "btn" })
+                <button class="btn request-pay" data-request-id="@request.RequestId">Pay</button>
             </div>
         }
     </div>
@@ -31,8 +31,40 @@
                 <br />
                 Notes: @request.Notes
                 <br />
-                <button class="btn">Cancel</button>
+                <button class="btn request-cancel" data-request-id="@request.RequestId">Cancel</button>
             </div>
         }
     </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $(".request-pay").click(payRequest);
+            $(".request-cancel").click(cancelRequest);
+        });
+
+        function payRequest(e) {
+            var requestId = $(e.delegateTarget).data("requestId");
+            $.ajax({
+                url: "@this.Url.HttpRouteUrl("ApiWithAction", new { action = "PostByRequest", controller = "PaymentAction" })/" + requestId,
+                method: "POST",
+                success: function (response) {
+                    alert(response);
+                }
+            });
+        }
+
+        function cancelRequest(e) {
+            var requestId = $(e.delegateTarget).data("requestId");
+            
+            $.ajax({
+                url: "@this.Url.HttpRouteUrl("DefaultApi", new { controller = "Request" })/" + requestId,
+                method: "DELETE",
+            success: function (response) {
+                alert(response);
+            }
+        });
+        }
+    </script>
 }

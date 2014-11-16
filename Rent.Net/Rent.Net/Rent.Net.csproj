@@ -210,9 +210,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411161945424_Initial.cs" />
-    <Compile Include="Migrations\201411161945424_Initial.Designer.cs">
-      <DependentUpon>201411161945424_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201411162249429_Initial.cs" />
+    <Compile Include="Migrations\201411162249429_Initial.Designer.cs">
+      <DependentUpon>201411162249429_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -284,12 +284,12 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201411161945424_Initial.resx">
-      <DependentUpon>201411161945424_Initial.cs</DependentUpon>
-    </EmbeddedResource>
+    <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Base\" />
+    <EmbeddedResource Include="Migrations\201411162249429_Initial.resx">
+      <DependentUpon>201411162249429_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

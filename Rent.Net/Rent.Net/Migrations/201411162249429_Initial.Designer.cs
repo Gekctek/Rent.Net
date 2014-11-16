@@ -13,7 +13,7 @@ namespace Rent.Net.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201411161945424_Initial"; }
+            get { return "201411162249429_Initial"; }
         }
         
         string IMigrationMetadata.Source

@@ -8,20 +8,24 @@ namespace Rent.Net.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.Requests",
+                "dbo.Payments",
                 c => new
                     {
-                        RequestId = c.Int(nullable: false, identity: true),
-                        PayerId = c.String(nullable: false, maxLength: 128),
-                        PayeeId = c.String(nullable: false, maxLength: 128),
+                        PaymentId = c.Int(nullable: false, identity: true),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Notes = c.String(),
+                        Approved = c.Boolean(nullable: false),
+                        RequestId = c.Int(),
+                        PayeeId = c.String(nullable: false, maxLength: 128),
+                        PayerId = c.String(nullable: false, maxLength: 128),
                     })
-                .PrimaryKey(t => t.RequestId)
+                .PrimaryKey(t => t.PaymentId)
                 .ForeignKey("dbo.ApplicationUsers", t => t.PayeeId)
                 .ForeignKey("dbo.ApplicationUsers", t => t.PayerId)
-                .Index(t => t.PayerId)
-                .Index(t => t.PayeeId);
+                .ForeignKey("dbo.Requests", t => t.RequestId)
+                .Index(t => t.RequestId)
+                .Index(t => t.PayeeId)
+                .Index(t => t.PayerId);
             
             CreateTable(
                 "dbo.ApplicationUsers",
@@ -70,24 +74,20 @@ namespace Rent.Net.Migrations
                 .Index(t => t.ApplicationUser_Id);
             
             CreateTable(
-                "dbo.Payments",
+                "dbo.Requests",
                 c => new
                     {
-                        PaymentId = c.Int(nullable: false, identity: true),
+                        RequestId = c.Int(nullable: false, identity: true),
+                        PayerId = c.String(nullable: false, maxLength: 128),
+                        PayeeId = c.String(nullable: false, maxLength: 128),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Notes = c.String(),
-                        Approved = c.Boolean(nullable: false),
-                        RequestId = c.Int(),
-                        PayeeId = c.String(nullable: false, maxLength: 128),
-                        PayerId = c.String(nullable: false, maxLength: 128),
                     })
-                .PrimaryKey(t => t.PaymentId)
+                .PrimaryKey(t => t.RequestId)
                 .ForeignKey("dbo.ApplicationUsers", t => t.PayeeId)
                 .ForeignKey("dbo.ApplicationUsers", t => t.PayerId)
-                .ForeignKey("dbo.Requests", t => t.RequestId)
-                .Index(t => t.RequestId)
-                .Index(t => t.PayeeId)
-                .Index(t => t.PayerId);
+                .Index(t => t.PayerId)
+                .Index(t => t.PayeeId);
             
             CreateTable(
                 "dbo.IdentityUserRoles",
@@ -118,30 +118,30 @@ namespace Rent.Net.Migrations
         public override void Down()
         {
             DropForeignKey("dbo.IdentityUserRoles", "IdentityRole_Id", "dbo.IdentityRoles");
-            DropForeignKey("dbo.Requests", "PayerId", "dbo.ApplicationUsers");
-            DropForeignKey("dbo.Requests", "PayeeId", "dbo.ApplicationUsers");
-            DropForeignKey("dbo.IdentityUserRoles", "ApplicationUser_Id", "dbo.ApplicationUsers");
             DropForeignKey("dbo.Payments", "RequestId", "dbo.Requests");
             DropForeignKey("dbo.Payments", "PayerId", "dbo.ApplicationUsers");
             DropForeignKey("dbo.Payments", "PayeeId", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.IdentityUserRoles", "ApplicationUser_Id", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.Requests", "PayerId", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.Requests", "PayeeId", "dbo.ApplicationUsers");
             DropForeignKey("dbo.IdentityUserLogins", "ApplicationUser_Id", "dbo.ApplicationUsers");
             DropForeignKey("dbo.IdentityUserClaims", "ApplicationUser_Id", "dbo.ApplicationUsers");
             DropIndex("dbo.IdentityUserRoles", new[] { "IdentityRole_Id" });
             DropIndex("dbo.IdentityUserRoles", new[] { "ApplicationUser_Id" });
+            DropIndex("dbo.Requests", new[] { "PayeeId" });
+            DropIndex("dbo.Requests", new[] { "PayerId" });
+            DropIndex("dbo.IdentityUserLogins", new[] { "ApplicationUser_Id" });
+            DropIndex("dbo.IdentityUserClaims", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.Payments", new[] { "PayerId" });
             DropIndex("dbo.Payments", new[] { "PayeeId" });
             DropIndex("dbo.Payments", new[] { "RequestId" });
-            DropIndex("dbo.IdentityUserLogins", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.IdentityUserClaims", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.Requests", new[] { "PayeeId" });
-            DropIndex("dbo.Requests", new[] { "PayerId" });
             DropTable("dbo.IdentityRoles");
             DropTable("dbo.IdentityUserRoles");
-            DropTable("dbo.Payments");
+            DropTable("dbo.Requests");
             DropTable("dbo.IdentityUserLogins");
             DropTable("dbo.IdentityUserClaims");
             DropTable("dbo.ApplicationUsers");
-            DropTable("dbo.Requests");
+            DropTable("dbo.Payments");
         }
     }
 }
