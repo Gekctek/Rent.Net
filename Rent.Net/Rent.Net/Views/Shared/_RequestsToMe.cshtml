@@ -2,9 +2,12 @@
 @using Rent.Net.Common;
 @using Microsoft.AspNet.Identity;
 
+@{ 
+    string userId = this.User.Identity.GetUserId();
+}
 
 Requests To Me:
-@foreach(Request request in RentUtil.Database.Requests.Where(r => r.PayeeId == this.User.Identity.GetUserId()))
+@foreach (Request request in RentUtil.Database.Requests.Where(r => r.PayeeId == userId))
 {
     <div>
         To: @request.Payee.UserName

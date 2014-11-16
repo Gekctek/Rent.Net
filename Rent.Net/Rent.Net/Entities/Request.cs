@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+﻿using FluentValidation;
+using System.ComponentModel.DataAnnotations;
+using FluentValidation.Attributes;
 
 namespace Rent.Net.Entities
 {
+    [Validator(typeof(RequestValidator))]
     public class Request
     {
         public Request()
@@ -24,8 +23,17 @@ namespace Rent.Net.Entities
 
 
 
-
         public virtual ApplicationUser Payer { get; set; }
         public virtual ApplicationUser Payee { get; set; }
+    }
+
+    public class RequestValidator : AbstractValidator<Request>
+    {
+        public RequestValidator()
+        {
+            this.RuleFor(r => r.Amount)
+                .GreaterThan(0)
+                .WithMessage("Amount must be greater than 0.");
+        }
     }
 }

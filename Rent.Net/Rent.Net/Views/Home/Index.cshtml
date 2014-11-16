@@ -1,5 +1,5 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-
+@Html.ActionLink("Send a Request", "Send", "Request", null, new { @class = "btn"})
 @Html.Partial("_RequestsToMe")

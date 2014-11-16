@@ -12,13 +12,13 @@ namespace Rent.Net.Migrations
                 c => new
                     {
                         RequestId = c.Int(nullable: false, identity: true),
-                        PayerId = c.String(maxLength: 128),
+                        PayerId = c.String(nullable: false, maxLength: 128),
                         PayeeId = c.String(nullable: false, maxLength: 128),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Notes = c.String(),
                     })
                 .PrimaryKey(t => t.RequestId)
-                .ForeignKey("dbo.ApplicationUsers", t => t.PayeeId, cascadeDelete: true)
+                .ForeignKey("dbo.ApplicationUsers", t => t.PayeeId)
                 .ForeignKey("dbo.ApplicationUsers", t => t.PayerId)
                 .Index(t => t.PayerId)
                 .Index(t => t.PayeeId);

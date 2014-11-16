@@ -13,10 +13,20 @@ namespace Rent.Net.Entities
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Request>().HasKey(r => r.RequestId);
+
             modelBuilder.Entity<Request>()
                 .HasRequired(r => r.Payee)
-                .WithMany(r => r.Requests)
-                .HasForeignKey(r => r.PayeeId);
+                .WithMany(r => r.RequestsTo)
+                .HasForeignKey(r => r.PayeeId)
+                .WillCascadeOnDelete(false);
+            
+           modelBuilder.Entity<Request>()
+                .HasRequired(r => r.Payer)
+                .WithMany(r => r.RequestsFrom)
+                .HasForeignKey(r => r.PayerId)
+                .WillCascadeOnDelete(false);
+
 
             modelBuilder.Entity<IdentityUserLogin>().HasKey<string>(ul => ul.UserId);
             modelBuilder.Entity<IdentityUserRole>().HasKey<string>(ur => ur.RoleId);
