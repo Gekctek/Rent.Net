@@ -1,0 +1,33 @@
+﻿@model Payment
+@{
+    ViewBag.Title = "Send Payment";
+}
+
+<h2>Send</h2>
+
+@using (this.Html.BeginForm())
+{
+    @Html.HiddenFor(p => p.PayerId)
+    @Html.HiddenFor(p => p.RequestId)
+
+    <div class="form-group">
+        @Html.LabelFor(r => r.PayeeId, "Send Payment To:")
+        @Html.DropDownListFor(r => r.PayeeId, (SelectList)this.ViewBag.Users, new { @class = "form-control" })
+        @Html.ValidationMessageFor(r => r.PayeeId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(r => r.Amount, "Amount:")
+        @Html.TextBoxFor(r => r.Amount, new { @class = "form-control" })
+        @Html.ValidationMessageFor(r => r.Amount)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(r => r.Notes, "Notes:")
+        @Html.TextAreaFor(r => r.Notes, new { @class = "form-control" })
+        @Html.ValidationMessageFor(r => r.Notes)
+    </div>
+
+    <input type="submit" class="btn" />
+}
+

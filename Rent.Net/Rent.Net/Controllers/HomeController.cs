@@ -8,8 +8,7 @@ using System.Web.Mvc;
 
 namespace Rent.Net.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public ActionResult Index()
         {

@@ -199,17 +199,20 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Common\RentUtil.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\RequestController.cs" />
     <Compile Include="Entities\ApplicationUser.cs" />
+    <Compile Include="Entities\Payment.cs" />
     <Compile Include="Entities\RentDbContext.cs" />
     <Compile Include="Entities\Request.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411160748396_Initial.cs" />
-    <Compile Include="Migrations\201411160748396_Initial.Designer.cs">
-      <DependentUpon>201411160748396_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201411161945424_Initial.cs" />
+    <Compile Include="Migrations\201411161945424_Initial.Designer.cs">
+      <DependentUpon>201411161945424_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -271,6 +274,8 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Request\Send.cshtml" />
     <Content Include="Views\Request\Index.cshtml" />
+    <Content Include="Views\Payment\Index.cshtml" />
+    <Content Include="Views\Payment\Send.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -279,9 +284,12 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201411160748396_Initial.resx">
-      <DependentUpon>201411160748396_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201411161945424_Initial.resx">
+      <DependentUpon>201411161945424_Initial.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Base\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

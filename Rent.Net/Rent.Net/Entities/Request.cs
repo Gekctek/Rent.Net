@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using System.ComponentModel.DataAnnotations;
 using FluentValidation.Attributes;
+using System.Collections.Generic;
 
 namespace Rent.Net.Entities
 {
@@ -25,6 +26,8 @@ namespace Rent.Net.Entities
 
         public virtual ApplicationUser Payer { get; set; }
         public virtual ApplicationUser Payee { get; set; }
+
+        public virtual ICollection<Payment> Payments { get; set; }
     }
 
     public class RequestValidator : AbstractValidator<Request>

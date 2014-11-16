@@ -9,9 +9,8 @@ using Rent.Net.Common;
 
 namespace Rent.Net.Controllers
 {
-    public class RequestController : Controller
+    public class RequestController : BaseController
     {
-        public RentDbContext Database = new RentDbContext();
 
         public ActionResult Index()
         {
@@ -21,13 +20,13 @@ namespace Rent.Net.Controllers
         [HttpGet]
         public ActionResult Send()
         {
-            Request request = new Request { PayeeId = this.User.Identity.GetUserId() };
+            Request request = new Request { PayeeId = this.UserId };
             return this.SendView(request);
         }
 
         private ActionResult SendView(Request request)
         {
-            this.ViewBag.Users = new SelectList(this.Database.Users, "Id", "UserName", null);
+            this.AddUsersToViewBag();
             return this.View(request);
         }
 
@@ -45,12 +44,5 @@ namespace Rent.Net.Controllers
                 return this.SendView(request);
             }
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            this.Database.Dispose();
-            base.Dispose(disposing);
-        }
     }
-
 }

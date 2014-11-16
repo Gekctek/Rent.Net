@@ -4,11 +4,10 @@
 @using (RentDbContext dbContext = new RentDbContext())
 {
     string userId = this.User.Identity.GetUserId();
-    List<Request> requestsToMe = dbContext.Requests.AsNoTracking().Where(r => r.PayeeId == userId).ToList();
-    List<Request> myRequests = dbContext.Requests.AsNoTracking().Where(r => r.PayerId == userId).ToList();
+    ApplicationUser user = dbContext.Users.Find(userId);
     <div id="rent-request-incoming" class="rent-request-container">
         <span class="rent-request-header">Requests To Me:</span>
-        @foreach (Request request in requestsToMe)
+        @foreach (Request request in user.RequestsTo.ToList())
         {
             <div class="rent-request">
                 To: @(request.Payer == null ? "Failed to get the shit again" : request.Payer.UserName)
@@ -17,13 +16,13 @@
                 <br />
                 Notes: @request.Notes
                 <br />
-                <button class="btn">Pay</button>
+                @Html.ActionLink("Pay", "Send", "Payment", new { requestId = request.RequestId }, new { @class = "btn" })
             </div>
         }
     </div>
     <div id="rent-request-outgoing" class="rent-request-container">
         <span class="rent-request-header">My Requests:</span>
-        @foreach (Request request in myRequests)
+        @foreach (Request request in user.RequestsFrom.ToList())
         {
             <div class="rent-request">
                 To: @(request.Payee == null ? "Failed to get the shit again" : request.Payee.UserName)
