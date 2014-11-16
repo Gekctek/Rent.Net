@@ -11,6 +11,13 @@ namespace Rent.Net.Controllers
 {
     public class RequestController : Controller
     {
+        public RentDbContext Database = new RentDbContext();
+
+        public ActionResult Index()
+        {
+            return this.View();
+        }
+
         [HttpGet]
         public ActionResult Send()
         {
@@ -20,7 +27,7 @@ namespace Rent.Net.Controllers
 
         private ActionResult SendView(Request request)
         {
-            this.ViewBag.Users = new SelectList(RentUtil.Database.Users, "Id", "UserName", null);
+            this.ViewBag.Users = new SelectList(this.Database.Users, "Id", "UserName", null);
             return this.View(request);
         }
 
@@ -29,14 +36,21 @@ namespace Rent.Net.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                RentUtil.Database.Requests.Add(request);
-                RentUtil.Database.SaveChanges();
-                return this.RedirectToAction("Index", "Home");
+                this.Database.Requests.Add(request);
+                this.Database.SaveChanges();
+                return this.RedirectToAction("Index", "Home", null);
             }
             else
             {
                 return this.SendView(request);
             }
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            this.Database.Dispose();
+            base.Dispose(disposing);
+        }
     }
+
 }

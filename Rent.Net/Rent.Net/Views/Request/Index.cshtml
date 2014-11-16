@@ -1,0 +1,39 @@
+﻿@using Rent.Net.Entities;
+@using Microsoft.AspNet.Identity;
+
+@using (RentDbContext dbContext = new RentDbContext())
+{
+    string userId = this.User.Identity.GetUserId();
+    List<Request> requestsToMe = dbContext.Requests.AsNoTracking().Where(r => r.PayeeId == userId).ToList();
+    List<Request> myRequests = dbContext.Requests.AsNoTracking().Where(r => r.PayerId == userId).ToList();
+    <div id="rent-request-incoming" class="rent-request-container">
+        <span class="rent-request-header">Requests To Me:</span>
+        @foreach (Request request in requestsToMe)
+        {
+            <div class="rent-request">
+                To: @(request.Payer == null ? "Failed to get the shit again" : request.Payer.UserName)
+                <br />
+                Amount: @request.Amount
+                <br />
+                Notes: @request.Notes
+                <br />
+                <button class="btn">Pay</button>
+            </div>
+        }
+    </div>
+    <div id="rent-request-outgoing" class="rent-request-container">
+        <span class="rent-request-header">My Requests:</span>
+        @foreach (Request request in myRequests)
+        {
+            <div class="rent-request">
+                To: @(request.Payee == null ? "Failed to get the shit again" : request.Payee.UserName)
+                <br />
+                Amount: @request.Amount
+                <br />
+                Notes: @request.Notes
+                <br />
+                <button class="btn">Cancel</button>
+            </div>
+        }
+    </div>
+}
