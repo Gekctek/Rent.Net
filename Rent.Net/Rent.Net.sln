@@ -5,6 +5,22 @@ VisualStudioVersion = 14.0.22310.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rent.Net", "Rent.Net\Rent.Net.csproj", "{D50CE95C-01BC-405F-AF7C-D8938064936F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CD2B6582-9303-40C5-97DC-38EB152B0D44}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{A8B31657-40E3-457B-87DC-BE3D6E2EEABF}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{8683B894-A4F9-4008-9D86-B639BB5BC99F}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\RentNet-WAWS-dev.json = PublishScripts\Configurations\RentNet-WAWS-dev.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +34,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8683B894-A4F9-4008-9D86-B639BB5BC99F} = {A8B31657-40E3-457B-87DC-BE3D6E2EEABF}
 	EndGlobalSection
 EndGlobal
