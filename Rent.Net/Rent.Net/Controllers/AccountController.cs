@@ -288,13 +288,6 @@ namespace Rent.Net.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        internal class BasicAuthorizeAttribute : AuthorizeAttribute
-        {
-            public override void OnAuthorization(AuthorizationContext filterContext)
-            {
-                base.OnAuthorization(filterContext);
-            }
-        }
         #endregion
     }
 }

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
-using System.Threading.Tasks;
+using System;
 
 namespace Rent.Net.Entities
 {
@@ -9,7 +8,7 @@ namespace Rent.Net.Entities
     {
         public RentDbContext() : base("DefaultConnection")
         {
-
+            Database.SetInitializer<RentDbContext>(new CreateDatabaseIfNotExists<RentDbContext>());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -23,12 +22,13 @@ namespace Rent.Net.Entities
             modelBuilder.Entity<IdentityUserRole>().HasKey<string>(ur => ur.RoleId);
         }
 
-        public DbSet<Request> Requests { get; set; }
-
-        public static RentDbContext Create()
+        internal static RentDbContext Create()
         {
             return new RentDbContext();
         }
+
+        public DbSet<Request> Requests { get; set; }
+
     }
 
    

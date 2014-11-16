@@ -17,6 +17,14 @@ namespace Rent.Net.Entities
 
         public string PayerId { get; set; }
         public string PayeeId { get; set; }
+        public decimal Amount { get; set; }
+        public string Notes { get; set; }
+
+
+
+
+
+
         public virtual ApplicationUser Payer { get; set; }
         public virtual ApplicationUser Payee { get; set; }
     }
