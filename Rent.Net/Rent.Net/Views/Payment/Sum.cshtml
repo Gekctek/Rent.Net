@@ -1,0 +1,12 @@
+﻿@using Rent.Net.Models;
+@model List<SumModel>
+@{
+    this.Layout = null;
+}
+@foreach (SumModel sumModel in this.Model)
+{
+    @sumModel.Amount;
+    <br />
+    @sumModel.Name;
+    <br />
+}

@@ -1,4 +1,5 @@
 ﻿using Rent.Net.Entities;
+using Rent.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,32 @@ namespace Rent.Net.Controllers
         {
             this.AddUsersToViewBag();
             return this.View(payment);
+        }
+
+        public ActionResult Sum()
+        {
+            List<SumModel> model = new List<SumModel>();
+
+            List<ApplicationUser> users = this.OtherUsers.ToList();
+            foreach (ApplicationUser appUser in users)
+            {
+                IQueryable<Payment> approvedPayments = this.Database.Payments.Where(p => p.Approved);
+                List<Payment> paymentsToMe = approvedPayments.Where(p => p.PayeeId == this.UserId).ToList();
+                List<Payment> paymentsFromMe = approvedPayments.Where(p => p.PayerId == this.UserId).ToList();
+                decimal amount = 0;
+                foreach (Payment payment in paymentsToMe)
+                {
+                    amount += payment.Amount;
+                }
+                foreach (Payment payment in paymentsFromMe)
+                {
+                    amount -= payment.Amount;
+                }
+                SumModel receiptInfo = new SumModel(appUser.UserName, amount);
+
+                model.Add(receiptInfo);
+            }
+            return this.View(model);
         }
     }
 }
