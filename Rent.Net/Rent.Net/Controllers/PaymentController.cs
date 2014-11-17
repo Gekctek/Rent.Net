@@ -10,9 +10,6 @@ namespace Rent.Net.Controllers
 {
     public class PaymentController : BaseController
     {
-
-
-        // GET: Payment
         public ActionResult Index()
         {
             return View();

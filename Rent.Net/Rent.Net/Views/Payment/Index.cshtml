@@ -56,6 +56,10 @@
                 url: "@this.Url.HttpRouteUrl("ApiWithAction", new { Controller = "PaymentAction", Action = "Approve" })/" + paymentId,
                 method: "POST",
                 success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    console.log(response);
                     alert(response);
                 }
             });
@@ -68,6 +72,10 @@
                 url: "@this.Url.HttpRouteUrl("DefaultApi", new { Controller = "Payment" })/" + paymentId,
                 method: "DELETE",
                 success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    console.log(response);
                     alert(response);
                 }
             });

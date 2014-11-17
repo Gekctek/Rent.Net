@@ -5,10 +5,17 @@
 {
     string userId = this.User.Identity.GetUserId();
     ApplicationUser user = dbContext.Users.Find(userId);
+    List<Payment> paymentsFromMe = user.PaymentsFrom.ToList();
+    List<Payment> paymentsToMe = user.PaymentsTo.ToList();
     <div id="rent-request-incoming" class="rent-request-container">
         <span class="rent-request-header">Requests To Me:</span>
         @foreach (Request request in user.RequestsTo.ToList())
         {
+            if(paymentsFromMe.Any(p => p.RequestId == request.RequestId))
+            {
+                //Skip if there are pending payments for that request
+                continue;
+            }
             <div class="rent-request">
                 To: @(request.Payer == null ? "Failed to get the shit again" : request.Payer.UserName)
                 <br />
@@ -24,6 +31,11 @@
         <span class="rent-request-header">My Requests:</span>
         @foreach (Request request in user.RequestsFrom.ToList())
         {
+            if(paymentsToMe.Any(p => p.RequestId == request.RequestId))
+            {
+                //Skip if there are pending payments for that request
+                continue;
+            }
             <div class="rent-request">
                 To: @(request.Payee == null ? "Failed to get the shit again" : request.Payee.UserName)
                 <br />
@@ -50,6 +62,10 @@
                 url: "@this.Url.HttpRouteUrl("ApiWithAction", new { action = "PostByRequest", controller = "PaymentAction" })/" + requestId,
                 method: "POST",
                 success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    console.log(response);
                     alert(response);
                 }
             });
@@ -61,9 +77,13 @@
             $.ajax({
                 url: "@this.Url.HttpRouteUrl("DefaultApi", new { controller = "Request" })/" + requestId,
                 method: "DELETE",
-            success: function (response) {
-                alert(response);
-            }
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    console.log(response);
+                    alert(response);
+                }
         });
         }
     </script>

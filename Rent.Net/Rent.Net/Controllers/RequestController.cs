@@ -60,6 +60,14 @@ namespace Rent.Net.ApiControllers
             {
                 return this.BadRequest("Request does not exist with the id of " + id);
             }
+            List<Payment> paymentsFromRequest = this.Database.Payments.Where(p => p.RequestId == request.RequestId).ToList();
+            if (!paymentsFromRequest.IsNullOrEmpty())
+            {
+                foreach(Payment payment in paymentsFromRequest)
+                {
+                    this.Database.Entry(payment).State = System.Data.Entity.EntityState.Deleted;
+                }
+            }
             this.Database.Entry(request).State = System.Data.Entity.EntityState.Deleted;
             this.Database.SaveChanges();
             return this.Ok();
