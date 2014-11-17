@@ -14,12 +14,12 @@ namespace Rent.Net.Controllers
     {
         public RentDbContext Database = new RentDbContext();
 
-        public List<ApplicationUser> OtherUsers
+        public IQueryable<ApplicationUser> OtherUsers
         {
             get
             {
                 string userId = this.UserId;
-                return this.Database.Users.Where(u => u.Id != userId).ToList();
+                return this.Database.Users.Where(u => u.Id != userId);
             }
         }
 

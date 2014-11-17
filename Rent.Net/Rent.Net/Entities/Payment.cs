@@ -29,7 +29,7 @@ namespace Rent.Net.Entities
     {
         public PaymentValidator()
         {
-            this.RuleFor(r => r.Amount)
+            this.RuleFor(p => p.Amount)
                 .GreaterThan(0)
                 .WithMessage("Amount must be greater than 0.");
         }
