@@ -1,0 +1,90 @@
+﻿@using Rent.Net.Entities;
+@using Microsoft.AspNet.Identity;
+
+@using (RentDbContext dbContext = new RentDbContext())
+{
+    string userId = this.User.Identity.GetUserId();
+    ApplicationUser user = dbContext.Users.Find(userId);
+    List<Payment> paymentsFromMe = user.PaymentsFrom.ToList();
+    List<Payment> paymentsToMe = user.PaymentsTo.ToList();
+    <div id="rent-request-incoming" class="rent-request-container">
+        <span class="rent-request-header">Requests To Me:</span>
+        @foreach (Request request in user.RequestsTo.ToList())
+        {
+            if(paymentsFromMe.Any(p => p.RequestId == request.RequestId))
+            {
+                //Skip if there are pending payments for that request
+                continue;
+            }
+            <div class="rent-request">
+                To: @(request.Payer == null ? "Failed to get the shit again" : request.Payer.UserName)
+                <br />
+                Amount: @request.Amount
+                <br />
+                Notes: @request.Notes
+                <br />
+                <button class="btn request-pay" data-request-id="@request.RequestId">Pay</button>
+            </div>
+        }
+    </div>
+    <div id="rent-request-outgoing" class="rent-request-container">
+        <span class="rent-request-header">My Requests:</span>
+        @foreach (Request request in user.RequestsFrom.ToList())
+        {
+            if(paymentsToMe.Any(p => p.RequestId == request.RequestId))
+            {
+                //Skip if there are pending payments for that request
+                continue;
+            }
+            <div class="rent-request">
+                To: @(request.Payee == null ? "Failed to get the shit again" : request.Payee.UserName)
+                <br />
+                Amount: @request.Amount
+                <br />
+                Notes: @request.Notes
+                <br />
+                <button class="btn request-cancel" data-request-id="@request.RequestId">Cancel</button>
+            </div>
+        }
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $(".request-pay").click(payRequest);
+            $(".request-cancel").click(cancelRequest);
+        });
+
+        function payRequest(e) {
+            var requestId = $(e.delegateTarget).data("requestId");
+            $.ajax({
+                url: "@this.Url.HttpRouteUrl("ApiWithAction", new { action = "PostByRequest", controller = "PaymentAction" })/" + requestId,
+                method: "POST",
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    console.log(response);
+                    alert(response);
+                }
+            });
+        }
+
+        function cancelRequest(e) {
+            var requestId = $(e.delegateTarget).data("requestId");
+            
+            $.ajax({
+                url: "@this.Url.HttpRouteUrl("DefaultApi", new { controller = "Request" })/" + requestId,
+                method: "DELETE",
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    console.log(response);
+                    alert(response);
+                }
+        });
+        }
+    </script>
+}

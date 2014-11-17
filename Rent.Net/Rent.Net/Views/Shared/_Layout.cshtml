@@ -9,6 +9,12 @@
 </head>
 <body>
     <div class="container body-content">
+        <div id="rent-nav">
+            @Html.ActionLink("Send a Request", "Send", "Request", null, new { @class = "btn btn-default" })
+            @Html.ActionLink("View Requests", "Index", "Request", null, new { @class = "btn btn-default" })
+            @Html.ActionLink("Send a Payment", "Send", "Payment", null, new { @class = "btn btn-default" })
+            @Html.ActionLink("View Payments", "Index", "Payment", null, new { @class = "btn btn-default" })
+        </div>
         @RenderBody()
     </div>
 
