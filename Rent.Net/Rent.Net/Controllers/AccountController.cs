@@ -228,10 +228,7 @@ namespace Rent.Net.Controllers
             return View();
         }
 
-        //
-        // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
