@@ -3,10 +3,12 @@
 @{
     this.Layout = null;
 }
-@foreach (SumModel sumModel in this.Model)
-{
-    @sumModel.Amount;
-    <br />
-    @sumModel.Name;
-    <br />
-}
+<div class="payment-sums">
+    @foreach (SumModel sumModel in this.Model)
+    {
+        @:$@sumModel.Amount
+        <br />
+        @sumModel.Name;
+        <br />
+    }
+</div>

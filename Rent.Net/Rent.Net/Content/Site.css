@@ -22,3 +22,12 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.payment-sums {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #C3C3C3;
+}

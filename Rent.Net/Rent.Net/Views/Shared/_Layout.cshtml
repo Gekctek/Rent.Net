@@ -17,6 +17,7 @@
                 @Html.ActionLink("Send a Payment", "Send", "Payment", null, new { @class = "btn btn-default" })
                 @Html.ActionLink("View Payments", "Index", "Payment", null, new { @class = "btn btn-default" })
             </div>
+            @Html.Action("Sum", "Payment")
         }
         @RenderBody()
     </div>
