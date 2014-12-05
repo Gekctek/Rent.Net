@@ -49,11 +49,25 @@ namespace Rent.Net.ApiControllers
     public class BaseApiController : ApiController
     {
         public RentDbContext Database = new RentDbContext();
+
+        public const string FilterName = "filter";
+        public const string ReceivedFilter = "received";
+        public const string SentFilter = "sent";
+
         public string UserId
         {
             get
             {
                 return this.User.Identity.GetUserId();
+            }
+        }
+        
+        public IQueryable<ApplicationUser> OtherUsers
+        {
+            get
+            {
+                string userId = this.UserId;
+                return this.Database.Users.Where(u => u.Id != userId);
             }
         }
 

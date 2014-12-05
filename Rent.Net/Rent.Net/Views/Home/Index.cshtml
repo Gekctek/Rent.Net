@@ -1,3 +1,203 @@
-﻿@{
+﻿@using Rent.Net.ApiControllers;
+@{
     ViewBag.Title = "Home Page";
+
+    string paymentUrl = this.Url.HttpRouteUrl("DefaultApi", new { controller = "Payment" });
+    string requestUrl = this.Url.HttpRouteUrl("DefaultApi", new { controller = "Request" });
+    string userUrl = this.Url.HttpRouteUrl("DefaultApi", new { controller = "User" });
+    string approvalUrl = this.Url.HttpRouteUrl("DefaultApi", new { controller = "PaymentApproval" });
 }
+
+<div ng-app="rentApp">
+    <div ng-controller="MainCtrl">
+        <div>
+            Request to:
+            <select ng-options="user.UserName for user in users" ng-model="requestToUser" ng-init="requestToUser = users[0]"></select>
+            Amount in dollars:
+            <input type="numeric" ng-model="requestAmount" />
+            <button type="button" ng-click="request()">Request</button>
+        </div>
+        <div>
+            Pay to:
+            <select ng-options="user.UserName for user in users" ng-model="payToUser"></select>
+            Amount in dollars:
+            <input type="numeric" ng-model="payAmount" />
+            <button type="button" ng-click="pay()">Pay</button>
+        </div>
+
+        <h1>Requests To Me</h1>
+        <div ng-repeat="request in requests">
+            <span>Request of ${{request.Amount}} from {{usersDict[request.Payer]}} on {{request.Created}}.</span>
+            <button type="button" ng-click="pay(request)">Pay</button>
+        </div>
+
+        <h1>My Pending Requests</h1>
+        <div ng-repeat="request in myRequests">
+            <span>Request of ${{request.Amount}} to {{usersDict[request.Payee]}} on {{request.Created}}.</span>
+            <button type="button" ng-click="removeRequest(request)">Cancel Request</button>
+        </div>
+
+
+        <h1>Payments To Me</h1>
+        <div ng-repeat="payment in payments">
+            <span>Payment of ${{payment.Amount}} from {{usersDict[payment.Payer]}} on {{payment.Created}}. Approved: {{!!payment.Approved}}</span>
+            <span ng-if="!!payment.requestId"> Paying request with id {{payment.RequestId}}</span>
+            <div ng-if="!payment.Approved">
+                <button type="button" ng-click="approve(payment)">Approve</button>
+                <button type="button" ng-click="reject(payment)">Reject</button>
+            </div>
+        </div>
+        <h1>Payments From Me</h1>
+        <div ng-repeat="payment in myPayments">
+            <span>Payment of ${{payment.Amount}} to {{usersDict[payment.Payee]}} on {{payment.Created}}. Approved: {{!!payment.Approved}}</span>
+        </div>
+
+
+
+    </div>
+
+    <script type="text/javascript">
+
+        angular.module('rentApp', [])
+        .controller('MainCtrl', function ($scope, $http) {
+
+            $scope.request = function () {
+                $http.post("@requestUrl", { Amount: $scope.requestAmount, PayerId: $scope.requestToUser.Id })
+                .success(function (data, status, headers, config) {
+                    updateMyRequests($scope, $http);
+                })
+                .error(function (data, status, headers, config) {
+                    alert(data);
+                });
+            }
+
+            $scope.removeRequest = function (request) {
+                $http.delete("@requestUrl/" + request.RequestId)
+                .success(function (data, status, headers, config) {
+                    updateMyRequests($scope, $http);
+                })
+                .error(function (data, status, headers, config) {
+                    alert(data);
+                });
+            }
+
+            $scope.pay = function (request) {
+                if (!request) {
+                    $http.post("@paymentUrl/", { PayeeId: $scope.payToUser.Id, Amount: $scope.payAmount })
+                    .success(function (data, status, headers, config) {
+                        updateMyPayments($scope, $http);
+                    })
+                    .error(function (data, status, headers, config) {
+                        alert(data);
+                    });
+                } else {
+                    $http.post("@paymentUrl/", { PayeeId: request.PayeeId, Amount: request.Amount, RequestId: request.RequestId })
+                    .success(function (data, status, headers, config) {
+                        updateMyPayments($scope, $http);
+                    })
+                    .error(function (data, status, headers, config) {
+                        alert(data);
+                    });
+                }
+            }
+
+            $scope.approve = function (payment) {
+                $http.post("@approvalUrl/" + payment.PaymentId)
+                .success(function (data, status, headers, config) {
+                    updatePayments($scope, $http);
+                    updateMyRequests($scope, $http);
+                })
+                .error(function (data, status, headers, config) {
+                    alert(data);
+                });
+            }
+
+            $scope.reject = function (payment) {
+                $http.delete("@approvalUrl/" + payment.PaymentId)
+                .success(function (data, status, headers, config) {
+                    updateMyRequests($scope, $http);
+                })
+                .error(function (data, status, headers, config) {
+                    alert(data);
+                });
+            }
+
+
+            $scope.isComplete = function (item) {
+                console.log(item);
+                console.log(!!item.complete);
+                return !!item.complete;
+            };
+
+            updateUsers($scope, $http);
+            updatePayments($scope, $http);
+            updateRequests($scope, $http);
+            updateMyRequests($scope, $http);
+            updateMyPayments($scope, $http);
+        });
+
+
+
+        function updatePayments($scope, $http) {
+            $http.get("@(paymentUrl + "?" + BaseApiController.FilterName + "=" + BaseApiController.ReceivedFilter)")
+            .success(function (data, status, headers, config) {
+                $scope.payments = angular.fromJson(data);
+            })
+            .error(function (data, status, headers, config) {
+                alert(data);
+            });
+        }
+
+        function updateMyPayments($scope, $http) {
+            $http.get("@(paymentUrl + "?" + BaseApiController.FilterName + "=" + BaseApiController.SentFilter)")
+            .success(function (data, status, headers, config) {
+                $scope.myPayments = angular.fromJson(data);
+            })
+            .error(function (data, status, headers, config) {
+                alert(data);
+            });
+        }
+
+        function updateUsers($scope, $http) {
+            $http.get("@userUrl")
+            .success(function (data, status, headers, config) {
+                var serverUsers = angular.fromJson(data);
+
+                var usersDictionary = [];
+                angular.forEach(serverUsers, function (obj, index) {
+                    this[obj.Id] = obj.UserName;
+                }, usersDictionary);
+
+                $scope.usersDict = usersDictionary;
+
+                $scope.users = serverUsers;
+                $scope.payToUser = $scope.users[0];
+                $scope.requestToUser = $scope.users[0];
+
+            })
+            .error(function (data, status, headers, config) {
+                alert(data);
+            });
+        }
+
+        function updateRequests($scope, $http) {
+            $http.get("@(requestUrl + "?" + BaseApiController.FilterName + "=" + BaseApiController.ReceivedFilter)")
+            .success(function (data, status, headers, config) {
+                $scope.requests = angular.fromJson(data);
+            })
+            .error(function (data, status, headers, config) {
+                alert(data);
+            });
+        }
+
+        function updateMyRequests($scope, $http) {
+            $http.get("@(requestUrl + "?" + BaseApiController.FilterName + "=" + BaseApiController.SentFilter)")
+            .success(function (data, status, headers, config) {
+                $scope.myRequests = angular.fromJson(data);
+            })
+            .error(function (data, status, headers, config) {
+                alert(data);
+            });
+        }
+    </script>
+</div>

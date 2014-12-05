@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Attributes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +16,17 @@ namespace Rent.Net.Entities
         public decimal Amount { get; set; }
         public string Notes { get; set; }
         public bool Approved { get; set; }
+        public DateTime Created { get; set; }
 
         public int? RequestId { get; set; }
         public string PayeeId { get; set; }
         public string PayerId { get; set; }
 
+        [JsonIgnore]
         public virtual ApplicationUser Payee { get; set; }
+        [JsonIgnore]
         public virtual ApplicationUser Payer { get; set; }
+        [JsonIgnore]
         public virtual Request Request { get; set; }
     }
 

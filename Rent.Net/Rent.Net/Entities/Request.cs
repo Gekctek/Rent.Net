@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using FluentValidation.Attributes;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using System;
 
 namespace Rent.Net.Entities
 {
@@ -19,14 +21,18 @@ namespace Rent.Net.Entities
         public string PayeeId { get; set; }
         public decimal Amount { get; set; }
         public string Notes { get; set; }
+        public DateTime Created { get; set; }
 
 
 
 
 
+        [JsonIgnore]
         public virtual ApplicationUser Payer { get; set; }
+        [JsonIgnore]
         public virtual ApplicationUser Payee { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Payment> Payments { get; set; }
     }
 

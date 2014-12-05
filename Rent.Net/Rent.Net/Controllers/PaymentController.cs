@@ -2,52 +2,115 @@
 using Rent.Net.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
 
-namespace Rent.Net.Controllers
+namespace Rent.Net.ApiControllers
 {
-    public class PaymentController : BaseController
+    public class PaymentController : BaseApiController
     {
-        public ActionResult Index()
+        public IHttpActionResult Get(string filter = null)
         {
-            return View();
-        }
-
-        [System.Web.Mvc.HttpGet]
-        public ActionResult Send()
-        {
-            Payment payment = new Payment
+            var payments = this.Database.Payments.AsQueryable();
+            if (filter != null)
             {
-                PayerId = this.UserId
-            };
-            return this.SendView(payment);
+                if (string.Equals(filter, BaseApiController.SentFilter, StringComparison.OrdinalIgnoreCase))
+                {
+                    payments = payments.Where(p => p.PayerId == this.UserId);
+                }
+                else if(string.Equals(filter, BaseApiController.ReceivedFilter, StringComparison.OrdinalIgnoreCase))
+                {
+                    payments = payments.Where(p => p.PayeeId == this.UserId);
+                }
+            }
+            return this.Ok(payments.ToList());
         }
 
-        [System.Web.Mvc.HttpPost]
-        public ActionResult Send(Payment payment)
+        public IHttpActionResult Get(int id)
         {
+            Payment payment = this.Database.Payments.FirstOrDefault(p => p.PaymentId == id);
+            if (payment == null)
+            {
+                return this.NotFound();
+            }
+            return this.Ok(id);
+        }
+
+        public IHttpActionResult Post(Payment payment)
+        {
+            payment.PayerId = this.UserId;
+            payment.Created = DateTime.Now;
             if (this.ModelState.IsValid)
             {
                 this.Database.Payments.Add(payment);
                 this.Database.SaveChanges();
-                return this.RedirectToAction("Index", "Home");
+                return this.Ok(payment);
             }
             else
             {
-                return this.SendView(payment);
+                return this.BadRequest(this.ModelState);
             }
         }
 
-        private ActionResult SendView(Payment payment)
+        public IHttpActionResult Delete(int id)
         {
-            this.AddUsersToViewBag();
-            return this.View(payment);
+            Payment payment = this.Database.Payments.FirstOrDefault(p => p.PaymentId == id);
+            if (payment == null)
+            {
+                return this.BadRequest("Payment does not exist with the Id of " + id);
+            }
+            this.Database.Entry(payment).State = EntityState.Deleted;
+            this.Database.SaveChanges();
+            return this.Ok();
         }
+    }
 
-        public ActionResult Sum()
+    public class PaymentApproveController : BaseApiController
+    {
+        public IHttpActionResult Post(int id)
+        {
+            Payment payment = this.Database.Payments.FirstOrDefault(p => p.PaymentId == id);
+            if (payment == null)
+            {
+                return this.BadRequest("Payment does not exist with the Id of " + id);
+            }
+            payment.Approved = true;
+            if (payment.Request != null)
+            {
+                this.Database.Entry(payment.Request).State = System.Data.Entity.EntityState.Deleted;
+            }
+            this.Database.SaveChanges();
+            return this.Ok();
+        }
+    }
+
+    public class PaymentByRequestController : BaseApiController
+    {
+        public IHttpActionResult Post(int id)
+        {
+            Request request = this.Database.Requests.FirstOrDefault(p => p.RequestId == id);
+            if (request == null)
+            {
+                return this.BadRequest("Request does not exist with the Id of " + id);
+            }
+            Payment payment = new Payment
+            {
+                Notes = request.Notes,
+                Amount = request.Amount,
+                PayerId = this.UserId,
+                RequestId = request.RequestId,
+                PayeeId = request.PayeeId
+            };
+            this.Database.Payments.Add(payment);
+            this.Database.SaveChanges();
+            return this.Ok();
+        }
+    }
+
+    public class PaymentSumComtroller : BaseApiController
+    {
+        public IHttpActionResult Get()
         {
             List<SumModel> model = new List<SumModel>();
 
@@ -70,61 +133,48 @@ namespace Rent.Net.Controllers
 
                 model.Add(receiptInfo);
             }
-            return this.View(model);
+            return this.Ok(model);
         }
     }
-}
-namespace Rent.Net.ApiControllers
-{
-    public class PaymentController : BaseApiController
+
+    public class PaymentApprovalController : BaseApiController
     {
+        public IHttpActionResult Post(int id)
+        {
+            Payment payment = this.Database.Payments.FirstOrDefault(p => p.PaymentId == id);
+            if(payment == null)
+            {
+                return this.NotFound();
+            }
+            if(payment.PayeeId != this.UserId)
+            {
+                return this.BadRequest("Only users who are the receiver of the payment can approve it.");
+            }
+            payment.Approved = true;
+            if(payment.Request != null)
+            {
+                Request request = payment.Request;
+                payment.RequestId = null;
+                payment.Request = null;
+                this.Database.SaveChanges();
+                this.Database.Requests.Remove(request);
+            }
+            this.Database.SaveChanges();
+            return this.Ok();
+        }
+
         public IHttpActionResult Delete(int id)
         {
             Payment payment = this.Database.Payments.FirstOrDefault(p => p.PaymentId == id);
             if (payment == null)
             {
-                return this.BadRequest("Payment does not exist with the Id of " + id);
+                return this.NotFound();
             }
-            this.Database.Entry(payment).State = System.Data.Entity.EntityState.Deleted;
-            this.Database.SaveChanges();
-            return this.Ok();
-        }
-    }
-
-    public class PaymentActionController : BaseApiController
-    {
-        public IHttpActionResult PostByRequest(int id)
-        {
-            Request request = this.Database.Requests.FirstOrDefault(p => p.RequestId == id);
-            if (request == null)
+            if (payment.PayeeId != this.UserId)
             {
-                return this.BadRequest("Request does not exist with the Id of " + id);
+                return this.BadRequest("Only users who are the receiver of the payment can reject it.");
             }
-            Payment payment = new Payment
-            {
-                Notes = request.Notes,
-                Amount = request.Amount,
-                PayerId = this.UserId,
-                RequestId = request.RequestId,
-                PayeeId = request.PayeeId
-            };
-            this.Database.Payments.Add(payment);
-            this.Database.SaveChanges();
-            return this.Ok();
-        }
-
-        public IHttpActionResult Approve(int id)
-        {
-            Payment payment = this.Database.Payments.FirstOrDefault(p => p.PaymentId == id);
-            if (payment == null)
-            {
-                return this.BadRequest("Payment does not exist with the Id of " + id);
-            }
-            payment.Approved = true;
-            if (payment.Request != null)
-            {
-                this.Database.Entry(payment.Request).State = System.Data.Entity.EntityState.Deleted;
-            }
+            this.Database.Entry(payment).State = EntityState.Deleted;
             this.Database.SaveChanges();
             return this.Ok();
         }
