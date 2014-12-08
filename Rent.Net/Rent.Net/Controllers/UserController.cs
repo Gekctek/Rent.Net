@@ -8,8 +8,7 @@ namespace Rent.Net.Controllers
     {
         public IHttpActionResult Get()
         {
-            var users = this.OtherUsers.Select(u => new { UserName = u.UserName, Id = u.Id });
-            return this.Ok(users);
+            return this.Ok(this.OtherUsers.ToList());
         }
     }
 }

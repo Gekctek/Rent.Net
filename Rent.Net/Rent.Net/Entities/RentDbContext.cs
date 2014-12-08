@@ -4,11 +4,11 @@ using System;
 
 namespace Rent.Net.Entities
 {
-    public class RentDbContext : IdentityDbContext<ApplicationUser>
+    public class RentDbContext : DbContext
     {
         public RentDbContext() : base("DefaultConnection")
         {
-            Database.SetInitializer<RentDbContext>(new CreateDatabaseIfNotExists<RentDbContext>());
+            Database.SetInitializer(new CreateDatabaseIfNotExists<RentDbContext>());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -48,10 +48,9 @@ namespace Rent.Net.Entities
                 .HasForeignKey(p => p.PayerId)
                 .WillCascadeOnDelete(false);
 
-
-            //Users/roles
-            modelBuilder.Entity<IdentityUserLogin>().HasKey<string>(ul => ul.UserId);
-            modelBuilder.Entity<IdentityUserRole>().HasKey<string>(ur => ur.RoleId);
+            //User
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.UserId);
         }
 
         internal static RentDbContext Create()
@@ -61,6 +60,7 @@ namespace Rent.Net.Entities
 
         public DbSet<Request> Requests { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 

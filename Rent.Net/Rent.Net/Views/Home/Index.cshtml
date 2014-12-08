@@ -62,7 +62,7 @@
         .controller('MainCtrl', function ($scope, $http) {
 
             $scope.request = function () {
-                $http.post("@requestUrl", { Amount: $scope.requestAmount, PayerId: $scope.requestToUser.Id })
+                $http.post("@requestUrl", { Amount: $scope.requestAmount, PayerId: $scope.requestToUser.UserId })
                 .success(function (data, status, headers, config) {
                     updateMyRequests($scope, $http);
                 })
@@ -83,7 +83,7 @@
 
             $scope.pay = function (request) {
                 if (!request) {
-                    $http.post("@paymentUrl/", { PayeeId: $scope.payToUser.Id, Amount: $scope.payAmount })
+                    $http.post("@paymentUrl/", { PayeeId: $scope.payToUser.UserId, Amount: $scope.payAmount })
                     .success(function (data, status, headers, config) {
                         updateMyPayments($scope, $http);
                     })
@@ -94,6 +94,7 @@
                     $http.post("@paymentUrl/", { PayeeId: request.PayeeId, Amount: request.Amount, RequestId: request.RequestId })
                     .success(function (data, status, headers, config) {
                         updateMyPayments($scope, $http);
+                        updateRequests($scope, $http);
                     })
                     .error(function (data, status, headers, config) {
                         alert(data);
@@ -115,7 +116,7 @@
             $scope.reject = function (payment) {
                 $http.delete("@approvalUrl/" + payment.PaymentId)
                 .success(function (data, status, headers, config) {
-                    updateMyRequests($scope, $http);
+                    updatePayments($scope, $http);
                 })
                 .error(function (data, status, headers, config) {
                     alert(data);
@@ -165,7 +166,7 @@
 
                 var usersDictionary = [];
                 angular.forEach(serverUsers, function (obj, index) {
-                    this[obj.Id] = obj.UserName;
+                    this[obj.UserId] = obj.UserName;
                 }, usersDictionary);
 
                 $scope.usersDict = usersDictionary;

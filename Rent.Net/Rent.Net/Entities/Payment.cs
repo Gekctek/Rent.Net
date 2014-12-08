@@ -19,13 +19,13 @@ namespace Rent.Net.Entities
         public DateTime Created { get; set; }
 
         public int? RequestId { get; set; }
-        public string PayeeId { get; set; }
-        public string PayerId { get; set; }
+        public int PayeeId { get; set; }
+        public int PayerId { get; set; }
 
         [JsonIgnore]
-        public virtual ApplicationUser Payee { get; set; }
+        public virtual User Payee { get; set; }
         [JsonIgnore]
-        public virtual ApplicationUser Payer { get; set; }
+        public virtual User Payer { get; set; }
         [JsonIgnore]
         public virtual Request Request { get; set; }
     }

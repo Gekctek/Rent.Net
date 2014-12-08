@@ -16,11 +16,12 @@ namespace Rent.Net.ApiControllers
             {
                 if (string.Equals(filter, BaseApiController.SentFilter, StringComparison.OrdinalIgnoreCase))
                 {
-                    requests = requests.Where(p => p.PayeeId == this.UserId);
+                    requests = requests.Where(r => r.PayeeId == this.UserId);
                 }
                 else if (string.Equals(filter, BaseApiController.ReceivedFilter, StringComparison.OrdinalIgnoreCase))
                 {
-                    requests = requests.Where(p => p.PayerId == this.UserId);
+                    //Only display if there are no pending payments
+                    requests = requests.Where(r => r.PayerId == this.UserId && r.Payments.Count < 1);
                 }
             }
             return this.Ok(requests);

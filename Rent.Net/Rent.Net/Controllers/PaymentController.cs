@@ -114,8 +114,8 @@ namespace Rent.Net.ApiControllers
         {
             List<SumModel> model = new List<SumModel>();
 
-            List<ApplicationUser> users = this.OtherUsers.ToList();
-            foreach (ApplicationUser appUser in users)
+            List<User> users = this.OtherUsers.ToList();
+            foreach (User appUser in users)
             {
                 IQueryable<Payment> approvedPayments = this.Database.Payments.Where(p => p.Approved);
                 List<Payment> paymentsToMe = approvedPayments.Where(p => p.PayeeId == this.UserId).ToList();

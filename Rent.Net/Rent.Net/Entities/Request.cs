@@ -17,8 +17,8 @@ namespace Rent.Net.Entities
 
         public int RequestId { get; set; }
 
-        public string PayerId { get; set; }
-        public string PayeeId { get; set; }
+        public int PayerId { get; set; }
+        public int PayeeId { get; set; }
         public decimal Amount { get; set; }
         public string Notes { get; set; }
         public DateTime Created { get; set; }
@@ -28,9 +28,9 @@ namespace Rent.Net.Entities
 
 
         [JsonIgnore]
-        public virtual ApplicationUser Payer { get; set; }
+        public virtual User Payer { get; set; }
         [JsonIgnore]
-        public virtual ApplicationUser Payee { get; set; }
+        public virtual User Payee { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<Payment> Payments { get; set; }
